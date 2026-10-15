@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maze Obby Setup</title>
+<style>
+:root { --bg: #f4f6fb; --card: #ffffff; --ink: #1b1d2a; --muted: #5d6478; --line: #e1e5ef; --accent: #2a7cff; --ok: #1e9e4a; --chip: #eef3ff; --off: #9aa0b0; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #12141c; --card: #1b1e29; --ink: #eef0f7; --muted: #a2a9bd; --line: #2c3142; --accent: #5aa0ff; --ok: #4cd37c; --chip: #23293a; --off: #6c7386; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+main { max-width: 1060px; margin: 0 auto; padding: 28px 16px 60px; }
+h1 { font-size: 28px; margin: 0 0 4px; }
+h2 { font-size: 19px; margin: 34px 0 10px; }
+h2 small { font-size: 13px; color: var(--muted); font-weight: 500; }
+p.sub { color: var(--muted); margin: 0 0 8px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 6px 16px; }
+.field { display: grid; grid-template-columns: 210px 1fr auto; gap: 12px; align-items: start; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.field:last-child { border-bottom: none; }
+.label { color: var(--muted); font-weight: 600; padding-top: 2px; }
+.val { white-space: pre-wrap; word-break: break-word; }
+.mono, code { font-family: ui-monospace, "Cascadia Mono", Consolas, monospace; font-size: 13.5px; }
+button.copy { border: 1px solid var(--line); background: var(--chip); color: var(--ink); border-radius: 8px; padding: 4px 10px; font: 600 13px system-ui, sans-serif; cursor: pointer; }
+button.copy:hover { border-color: var(--accent); }
+button.copy.done { color: var(--ok); border-color: var(--ok); }
+.tablewrap { overflow-x: auto; background: var(--card); border: 1px solid var(--line); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-size: 13px; font-weight: 600; background: var(--chip); }
+tr:last-child td { border-bottom: none; }
+td.on { color: var(--ok); font-weight: 700; white-space: nowrap; }
+td.off { color: var(--off); white-space: nowrap; }
+td.why { color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px 0; }
+.tag { border: 1px solid var(--line); background: var(--chip); border-radius: 7px; padding: 2px 9px; font-size: 13px; font-weight: 600; }
+ol.steps { padding-left: 20px; margin: 0; } ol.steps li { margin: 6px 0; }
+@media (max-width: 640px) { .field { grid-template-columns: 1fr auto; } .label { grid-column: 1 / -1; } }
+</style>
+</head>
+<body>
+<main>
+    <h1>Maze Obby: Create New Game</h1>
+    <p class="sub">Every field of the bloxity.io Manage Games &rarr; <b>Create New Game</b> form, top to bottom. Click Copy to copy a value. This game has <b>no in-app purchases</b>: everything is bought with Wins, so the IAP section stays empty.</p>
+    <h2>Basic Info</h2>
+    <div class="card">
+    <div class="field"><div class="label">Slug *</div><div class="val mono">maze-obby</div><button class="copy" data-v="maze-obby">Copy</button></div>
+    <div class="field"><div class="label">Name *</div><div class="val">Maze Obby</div><button class="copy" data-v="Maze Obby">Copy</button></div>
+    <div class="field"><div class="label">SEO Name (optional)</div><div class="val">Maze Obby - 12 Themed Mazes Obby | Free 3D Maze Escape Game</div><button class="copy" data-v="Maze Obby - 12 Themed Mazes Obby | Free 3D Maze Escape Game">Copy</button></div>
+    <div class="field"><div class="label">Developer</div><div class="val">&#9745; Show developer (your choice)</div><span></span></div>
+    <div class="field"><div class="label">Game Source *</div><div class="val">Choose <b>External URL</b> (not Upload ZIP): the game is hosted by Legion.</div><span></span></div>
+    <div class="field"><div class="label">Game URL</div><div class="val mono">https://maze-obby.play.bloxity.io/</div><button class="copy" data-v="https://maze-obby.play.bloxity.io/">Copy</button></div>
+    <div class="field"><div class="label">Raw URL (optional)</div><div class="val mono">https://maze-obby.play.bloxity.io/</div><button class="copy" data-v="https://maze-obby.play.bloxity.io/">Copy</button></div>
+    <div class="field"><div class="label">CG URL (optional)</div><div class="val"><span style="color:var(--off)">Leave empty</span></div><span></span></div>
+    <div class="field"><div class="label">Additional Game Domains</div><div class="val mono">maze-obby.play.bloxity.io
+maze-obby.dev.play.bloxity.io
+maze-obby.host.bloxity.io</div><button class="copy" data-v="maze-obby.play.bloxity.io
+maze-obby.dev.play.bloxity.io
+maze-obby.host.bloxity.io">Copy</button></div>
+    <div class="field"><div class="label">Short Description</div><div class="val">Find your way through 12 giant themed mazes! Sand and water, hedges, bricks, rainbow blocks, the backrooms, ice caves, lava, candy and neon: every maze is bigger than the last.</div><button class="copy" data-v="Find your way through 12 giant themed mazes! Sand and water, hedges, bricks, rainbow blocks, the backrooms, ice caves, lava, candy and neon: every maze is bigger than the last.">Copy</button></div>
+    <div class="field"><div class="label">Description</div><div class="val">Maze Obby is a giant maze adventure floating in the sky. Run through 12 themed mazes in a row, each one bigger and trickier than the last: golden sand walls over clear blue water, leafy hedge gardens, yellow brick mazes, rainbow blocks, bright grass labyrinths, dark hedges on wooden boards, classic Roblox studs, the yellow backrooms, slippery frozen ice caves, a glowing lava castle, candy cane walls and a neon galaxy under the stars. Follow the beam of light to every exit, collect the Win gems hidden in dead ends and reach every checkpoint to earn Wins, then escape the last maze to win big - and the rewards restart for another run! Become a Free Morph (a Noob, a Banana, a Robot, a Knight, a Ninja, a Dino and more), open the treasure chest and the lucky block, and spend your Wins on the Speed Coil, Gravity Coil, Super Coil, the Magic Carpet to fly over the walls, the Ray Gun and the Deadly Sword, Fling All, Kill All, Skip Stage, Skip to End and colourful trails. No in-app purchases: everything is earned with Wins. Race your friends to the finish!</div><button class="copy" data-v="Maze Obby is a giant maze adventure floating in the sky. Run through 12 themed mazes in a row, each one bigger and trickier than the last: golden sand walls over clear blue water, leafy hedge gardens, yellow brick mazes, rainbow blocks, bright grass labyrinths, dark hedges on wooden boards, classic Roblox studs, the yellow backrooms, slippery frozen ice caves, a glowing lava castle, candy cane walls and a neon galaxy under the stars. Follow the beam of light to every exit, collect the Win gems hidden in dead ends and reach every checkpoint to earn Wins, then escape the last maze to win big - and the rewards restart for another run! Become a Free Morph (a Noob, a Banana, a Robot, a Knight, a Ninja, a Dino and more), open the treasure chest and the lucky block, and spend your Wins on the Speed Coil, Gravity Coil, Super Coil, the Magic Carpet to fly over the walls, the Ray Gun and the Deadly Sword, Fling All, Kill All, Skip Stage, Skip to End and colourful trails. No in-app purchases: everything is earned with Wins. Race your friends to the finish!">Copy</button></div>
+    </div>
+    <h2>Checkboxes</h2>
+    <div class="tablewrap"><table><thead><tr><th>Option</th><th>Set to</th><th>Why</th></tr></thead><tbody>
+        <tr><td>SDK Support</td><td class="on">&#9745; ON</td><td class="why">The game uses the Bloxity SDK (login, avatars, friends, chat, emotes).</td></tr>
+        <tr><td>LoadingEnd Support</td><td class="on">&#9745; ON</td><td class="why">The game calls loadingEnd() as soon as it has joined a server.</td></tr>
+        <tr><td>Active</td><td class="on">&#9745; ON</td><td class="why">So players can find it.</td></tr>
+        <tr><td>Disable from Discovery</td><td class="off">&#9744; OFF</td><td class="why">Leave off so it shows on the homepage and in search.</td></tr>
+        <tr><td>Disable on New Games category</td><td class="off">&#9744; OFF</td><td class="why">Leave off: it should appear in New Games.</td></tr>
+        <tr><td>Add to Pre Release category</td><td class="off">&#9744; OFF</td><td class="why">Not needed.</td></tr>
+        <tr><td>Under Maintenance</td><td class="off">&#9744; OFF</td><td class="why">The game is ready.</td></tr>
+        <tr><td>Show Boxity Chat</td><td class="on">&#9745; ON</td><td class="why">Chat messages show as bubbles over players.</td></tr>
+        <tr><td>In-game Voice</td><td class="on">&#9745; ON</td><td class="why">The game reports its room id, so players in the same room can talk.</td></tr>
+        <tr><td>Show Missions Button</td><td class="off">&#9744; OFF</td><td class="why">This game has no Bloxity missions; the button would also sit top-left over the HUD.</td></tr>
+        <tr><td>Mobile Force Landscape</td><td class="on">&#9745; ON</td><td class="why">The joystick, JUMP and the side menus need the width.</td></tr>
+        <tr><td>Disable for CG</td><td class="off">&#9744; OFF</td><td class="why">Leave off.</td></tr>
+        <tr><td>Disable for MSN</td><td class="off">&#9744; OFF</td><td class="why">Leave off.</td></tr>
+        <tr><td>Enable New ESC Menu</td><td class="on">&#9745; ON</td><td class="why">The game reports its room, so the new menu can list the players in the server.</td></tr>
+    </tbody></table></div>
+    <div class="card" style="margin-top:12px">
+    <div class="field"><div class="label">Engine</div><div class="val">three.js (only an admin can set this)</div><span></span></div>
+    <div class="field"><div class="label">Page Layout</div><div class="val">Classic</div><span></span></div>
+    </div>
+    <h2>Tags <small>(pick these 20 from the tag bank)</small></h2>
+    <div class="card"><div class="tags"><span class="tag">Obby</span><span class="tag">Maze</span><span class="tag">Puzzle</span><span class="tag">Adventure</span><span class="tag">Exploration</span><span class="tag">Escape</span><span class="tag">Arcade</span><span class="tag">Multiplayer</span><span class="tag">3D</span><span class="tag">Cartoon</span><span class="tag">Stylized</span><span class="tag">Roblox-style</span><span class="tag">Casual</span><span class="tag">Cute</span><span class="tag">Family-friendly</span><span class="tag">Kid-friendly</span><span class="tag">Collecting</span><span class="tag">In-game Currency</span><span class="tag">Leaderboards</span><span class="tag">Platformer</span></div></div>
+    <h2>In-App Purchases <small>(none)</small></h2>
+    <div class="card">
+    <div class="field"><div class="label">IAPs</div><div class="val">Leave empty. Everything (gear, Fling All, Kill All, skips, trails, x2 Wins) is bought with Wins inside the game.</div><span></span></div>
+    <div class="field"><div class="label">Default Webhook URL</div><div class="val"><span style="color:var(--off)">Leave empty (no purchases, no webhook)</span></div><span></span></div>
+    </div>
+    <h2>Release</h2>
+    <div class="card">
+    <div class="field"><div class="label">Release date &amp; time</div><div class="val">Click <b>Clear</b> so it publishes as soon as it is Active.</div><span></span></div>
+    </div>
+    <p class="sub" style="margin-top:10px">Then click <b>Create Game</b>.</p>
+    <h2>Hosting steps</h2>
+    <div class="card" style="padding:14px 16px"><ol class="steps">
+        <li>hosting.bloxity.io: create the app <code>maze-obby</code> and copy its deploy token.</li>
+        <li>GitHub: an empty public repo <code>asivixlp44-cmyk/maze-obby</code> with the secret <code>LEGION_DEPLOY_TOKEN</code>, then push <code>main</code> (the workflow builds and deploys).</li>
+        <li>Check <code>https://maze-obby.host.bloxity.io/health</code> and play at <code>https://maze-obby.play.bloxity.io</code>.</li>
+        <li>Create the game in Manage Games with the values above (slug exactly <code>maze-obby</code>).</li>
+    </ol></div>
+</main>
+<script>
+document.addEventListener('click', async (e) => {
+    const b = e.target.closest('button.copy');
+    if (!b || !b.dataset.v) return;
+    try { await navigator.clipboard.writeText(b.dataset.v); }
+    catch (err) { const t = document.createElement('textarea'); t.value = b.dataset.v; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+    const old = b.textContent; b.textContent = '✓'; b.classList.add('done');
+    setTimeout(() => { b.textContent = old; b.classList.remove('done'); }, 1200);
+});
+</script>
+</body>
+</html>
