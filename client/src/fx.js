@@ -266,25 +266,59 @@ export function flame(at, spread, size, vel) {
 }
 
 // Trail streaming behind the player while they move: a vertical ribbon through the last few
-// positions, tapering and fading toward the tail (rainbow trails cycle their colour)
-const trailMat = new T.MeshBasicMaterial({ vertexColors: true, transparent: true, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide, toneMapped: false });
+// positions, tapering and fading toward the tail (rainbow trails cycle their colour).
+// The ribbon is built in the vertex shader from a uniform array of points, so a moving trail
+// never rewrites a vertex buffer (per-frame buffer uploads stall the GPU on ANGLE D3D11: six
+// players' trails halved the frame rate). The shared geometry only holds (point index, side).
+const TRAIL_N = 28;
+const trailGeo = new T.BufferGeometry();
+{
+    const seg = new Float32Array(TRAIL_N * 2 * 3), idx = [];
+    for (let i = 0; i < TRAIL_N; i++) for (let s = 0; s < 2; s++) { seg[(i * 2 + s) * 3] = i; seg[(i * 2 + s) * 3 + 1] = s; }
+    for (let i = 0; i < TRAIL_N - 1; i++) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
+    trailGeo.setAttribute('position', new T.BufferAttribute(seg, 3));
+    trailGeo.setIndex(idx);
+}
+const trailMat = new T.ShaderMaterial({
+    uniforms: { uPts: { value: new Float32Array(TRAIL_N * 4) }, uLen: { value: 0 }, uColor: { value: new T.Color() }, uRainbow: { value: 0 }, uTime: { value: 0 } },
+    vertexShader: /* glsl */`
+        uniform vec4 uPts[${TRAIL_N}];
+        uniform float uLen, uRainbow, uTime;
+        uniform vec3 uColor;
+        varying vec3 vCol;
+        void main() {
+            vec4 p = uPts[int(position.x + 0.5)];
+            float k = uLen > 1.0 ? max(0.0, 1.0 - position.x / (uLen - 1.0)) : 0.0;
+            vec3 c = uColor;
+            if (uRainbow > 0.5) {
+                float h = fract(uTime * 0.4 + position.x / ${TRAIL_N}.0);
+                vec3 rgb = clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+                c = 0.6 + (rgb - 0.5) * 0.8;
+            }
+            vCol = c * k * 0.95;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(p.x, p.y + (position.y > 0.5 ? p.w : -p.w), p.z, 1.0);
+        }`,
+    fragmentShader: /* glsl */`
+        varying vec3 vCol;
+        void main() {
+            gl_FragColor = vec4(vCol, 1.0);
+            #include <colorspace_fragment>
+        }`,
+    transparent: true, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide,
+});
 export function makeTrail(color) {
-    const N = 28, pts = [];
-    const pos = new Float32Array(N * 2 * 3), col = new Float32Array(N * 2 * 3);
-    const geo = new T.BufferGeometry();
-    geo.setAttribute('position', new T.BufferAttribute(pos, 3));
-    geo.setAttribute('color', new T.BufferAttribute(col, 3));
-    const idx = [];
-    for (let i = 0; i < N - 1; i++) { const a = i * 2; idx.push(a, a + 1, a + 2, a + 1, a + 3, a + 2); }
-    geo.setIndex(idx);
-    const mesh = new T.Mesh(geo, trailMat);
+    const N = TRAIL_N, pts = [];
+    // clone() shares typed-array uniforms, so each trail gets its own point buffer
+    const mat = trailMat.clone(), u = mat.uniforms, buf = u.uPts.value = new Float32Array(N * 4);
+    const mesh = new T.Mesh(trailGeo, mat);
     mesh.frustumCulled = false;
+    mesh.matrixAutoUpdate = false;
     scene.add(mesh);
-    const c = new T.Color(color), tmp = new T.Color();
+    const c = u.uColor.value.set(color);
     let acc = 0;
     return {
         color, rainbow: false, width: 1,
-        setColor(hex, rainbow) { this.color = hex; this.rainbow = !!rainbow; c.set(hex); },
+        setColor(hex, rainbow) { this.color = hex; this.rainbow = !!rainbow; c.set(hex); u.uRainbow.value = rainbow ? 1 : 0; },
         reset() { pts.length = 0; mesh.visible = false; },
         update(at, on, dt, t) {
             acc += dt;
@@ -296,21 +330,16 @@ export function makeTrail(color) {
             if (pts.length && on) pts[0].copy(at);
             mesh.visible = pts.length > 1;
             if (!mesh.visible) return;
+            const n = pts.length;
             for (let i = 0; i < N; i++) {
-                const p = pts[Math.min(i, pts.length - 1)];
-                const k = pts.length > 1 ? 1 - i / (pts.length - 1) : 0;
-                const h = i < pts.length ? this.width * k : 0;
-                if (this.rainbow) tmp.setHSL(((t || 0) * 0.4 + i / N) % 1, 1, 0.6); else tmp.copy(c);
-                for (let s = 0; s < 2; s++) {
-                    const o = (i * 2 + s) * 3;
-                    if (p) { pos[o] = p.x; pos[o + 1] = p.y + (s ? h : -h); pos[o + 2] = p.z; }
-                    col[o] = tmp.r * k * 0.95; col[o + 1] = tmp.g * k * 0.95; col[o + 2] = tmp.b * k * 0.95;
-                }
+                const p = pts[Math.min(i, n - 1)], o = i * 4;
+                buf[o] = p.x; buf[o + 1] = p.y; buf[o + 2] = p.z;
+                buf[o + 3] = i < n ? this.width * (1 - i / (n - 1)) : 0;
             }
-            geo.attributes.position.needsUpdate = true;
-            geo.attributes.color.needsUpdate = true;
+            u.uLen.value = n;
+            u.uTime.value = t || 0;
         },
-        dispose() { scene.remove(mesh); geo.dispose(); },
+        dispose() { scene.remove(mesh); mat.dispose(); },
     };
 }
 
@@ -435,10 +464,7 @@ export function updateFx(dt) {
 // ring or trail in play doesn't stop the game to compile its shader. Kept, never disposed.
 export function fxWarmGroup() {
     const g = new T.Group();
-    const tg = new T.BufferGeometry();
-    tg.setAttribute('position', new T.BufferAttribute(new Float32Array(9), 3));
-    tg.setAttribute('color', new T.BufferAttribute(new Float32Array(9), 3));
-    g.add(new T.Mesh(tg, trailMat));
+    g.add(new T.Mesh(trailGeo, trailMat));
     return g;
 }
 // the pools and rings are always in the scene: make sure they're seen by the warm-up even when empty
