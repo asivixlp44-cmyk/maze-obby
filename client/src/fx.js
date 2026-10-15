@@ -9,7 +9,8 @@ export const QUALITIES = {
     medium: { label: 'Medium', ratio: 1, shadows: true, shadowMap: 1024, glitter: true },
     high: { label: 'High', ratio: 1.5, shadows: true, shadowMap: 2048, glitter: true },
 };
-let quality = isTouch ? 'low' : 'medium';
+const weakPC = (navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 4;
+let quality = isTouch || weakPC ? 'low' : 'medium';
 try { quality = localStorage.getItem('mzo_quality') || quality; } catch (e) { /* default */ }
 if (!QUALITIES[quality]) quality = 'medium';
 

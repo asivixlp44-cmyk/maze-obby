@@ -2,7 +2,7 @@ import { Room } from 'colyseus';
 import { GameState, PlayerState } from './schema.js';
 import {
     getProfile, hasProfile, markDirty, saveProfiles, adoptGuestProgress, loadProfile, releaseProfile,
-    topProfiles, recordSession, USE_DB,
+    topProfiles, recordSession, saveSoon, USE_DB,
 } from './profiles.js';
 import { sealProfile, openSave } from './saves.js';
 import { verifyBloxityToken } from './bloxity.js';
@@ -180,7 +180,7 @@ export class MazeRoom extends Room {
             save: sealProfile(p),
         });
     }
-    changed(id) { this.syncPublic(id); this.sendProfile(id); markDirty(); }
+    changed(id) { this.syncPublic(id); this.sendProfile(id); saveSoon(); }
     toast(s, text, color) { s.client.send('toast', { text, color: color || '#ffffff' }); }
     mult(s) { return winsMult(s.profile, Date.now(), s.friends); }
     addWins(s, base, why, extra) {

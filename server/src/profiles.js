@@ -116,7 +116,14 @@ async function writeDocs(list) {
     }), { ordered: false });
 }
 
-let saving = null;
+let saving = null, soonTimer = null;
+// Soon (debounced): a checkpoint, a purchase or a win shouldn't wait for the 10 s save
+export function saveSoon() {
+    dirty = true;
+    if (soonTimer) return;
+    soonTimer = setTimeout(() => { soonTimer = null; saveProfiles(); }, 1500);
+    if (soonTimer.unref) soonTimer.unref();
+}
 export function saveProfiles() {
     if (!dirty) return saving || Promise.resolve();
     dirty = false;

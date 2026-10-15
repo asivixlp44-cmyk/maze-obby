@@ -8,6 +8,7 @@ import express from 'express';
 import { MazeRoom } from './MazeRoom.js';
 import { installStatReporter } from './bloxity.js';
 import { statsSummary } from './stats.js';
+import { USE_DB } from './profiles.js';
 
 // Serves the built client (client/dist) and the game room on the same port,
 // so one Node host is enough to run the whole game.
@@ -25,7 +26,7 @@ const app = config({
         maze: defineRoom(MazeRoom),
     },
     initializeExpress: (expressApp) => {
-        expressApp.get('/health', (req, res) => res.json({ ok: true }));
+        expressApp.get('/health', (req, res) => res.json({ ok: true, db: USE_DB }));
         // Play stats (aggregate, no names): /api/stats?key=<stats key>&days=7
         expressApp.get('/api/stats', async (req, res) => {
             const key = typeof req.query.key === 'string' ? req.query.key : '';

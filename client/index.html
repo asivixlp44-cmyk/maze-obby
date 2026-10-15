@@ -65,7 +65,7 @@ button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
 #stageRow { display: flex; align-items: center; gap: 0.35rem; }
 #stageBar { position: relative; width: min(30rem, 46vw); height: 2.3rem; border-radius: 0.9rem; background: #ffffff; border: 0.18rem solid rgba(18, 32, 74, 0.85); box-shadow: 0 0.25rem 0 rgba(18,32,74,0.6), 0 0.4rem 1rem rgba(10,20,60,0.25); overflow: hidden; }
 #stageFill { position: absolute; left: 0; top: 0; bottom: 0; width: 8%; background: linear-gradient(#8aeaff, #28c8ff); border-radius: 0 0.6rem 0.6rem 0; transition: width 0.6s cubic-bezier(0.3, 1.3, 0.5, 1); overflow: hidden; }
-#stageFill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.75) 50%, transparent 70%); transform: translateX(-110%); animation: shine 3.5s ease-in-out infinite; will-change: transform; }
+#stageFill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,0.75) 50%, transparent 70%); transform: translateX(-110%); animation: shine 3.5s ease-in-out infinite; }
 #stageText { position: absolute; inset: 0; display: grid; place-items: center; font-size: 1.35rem; font-weight: 700; color: #4a5268; text-shadow: -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff, 0 2px 0 #fff; }
 #luckyBtn { position: relative; width: 3.4rem; height: 3.4rem; padding: 0; border: 0; background: none; transform: rotate(8deg); animation: luckyBob 2.2s ease-in-out infinite; }
 #luckyBtn .cube { display: grid; place-items: center; width: 100%; height: 100%; border-radius: 0.55rem; border: 0.2rem solid #8a5a00; background: linear-gradient(135deg, #ffe84a, #f0b414); font-size: 2.2rem; font-weight: 700; color: #fff; text-shadow: 0 0.12rem 0 #8a5a00, -1px -1px 0 #8a5a00, 1px 1px 0 #8a5a00; box-shadow: inset 0 0.25rem 0 rgba(255,255,255,0.5), inset 0 -0.3rem 0 rgba(140,80,0,0.35), 0 0.3rem 0.7rem rgba(120,80,0,0.4); }
@@ -94,7 +94,7 @@ button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
 .rb:hover { transform: scale(1.08); }
 .rb:active { transform: scale(0.92); }
 .rb .ball { position: relative; overflow: hidden; display: grid; place-items: center; width: 4rem; height: 4rem; border-radius: 50%; border: 0.22rem solid var(--ink); background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.7), rgba(255,255,255,0) 48%), radial-gradient(circle at 50% 60%, rgba(0,0,0,0) 55%, rgba(0,0,0,0.28) 100%), var(--c); font-size: 2rem; box-shadow: inset 0 -0.3rem 0 rgba(0,0,0,0.2), inset 0 0.25rem 0 rgba(255,255,255,0.4), 0 0.25rem 0 var(--ink), 0 0.4rem 0.8rem rgba(10,20,60,0.3); }
-.rb .ball::after { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.5) 50%, transparent 70%); transform: translateX(-110%); animation: shine 6s ease-in-out infinite; pointer-events: none; will-change: transform; }
+.rb .ball::after { content: ''; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.5) 50%, transparent 70%); transform: translateX(-110%); animation: shine 6s ease-in-out infinite; pointer-events: none; }
 .rb .lb { position: absolute; bottom: -0.55rem; left: 50%; transform: translateX(-50%); font-size: 0.82rem; font-weight: 700; white-space: nowrap; color: var(--t, #fff); letter-spacing: 0.02em; }
 .rb.on .ball { box-shadow: 0 0 0 0.25rem #fff, 0 0 1.2rem 0.3rem var(--c); animation: rbGlow 1.2s ease-in-out infinite; }
 @keyframes rbGlow { 50% { transform: scale(1.08); } }
@@ -110,7 +110,7 @@ button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
 /* Top right: the menu icons (the top left is the Bloxity overlay's) */
 #iconRow { position: absolute; right: max(0.6rem, env(safe-area-inset-right, 0px)); top: calc(env(safe-area-inset-top, 0px) + 0.6rem); display: flex; gap: 0.3rem; }
 .ib { position: relative; width: 3.2rem; height: 3.4rem; padding: 0; border: 0; background: none; cursor: pointer; transition: transform 0.18s cubic-bezier(0.34, 1.8, 0.5, 1); }
-.ib .bub { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; margin: 0 auto; border-radius: 0.9rem; border: 0.18rem solid var(--ink); background: var(--bg, linear-gradient(#fff, #d8e8ff)); font-size: 1.45rem; box-shadow: inset 0 0.2rem 0 rgba(255,255,255,0.6), inset 0 -0.25rem 0 rgba(0,0,0,0.12), 0 0.18rem 0 var(--ink); animation: iconFloat 3.2s ease-in-out infinite; }
+.ib .bub { display: grid; place-items: center; width: 2.8rem; height: 2.8rem; margin: 0 auto; border-radius: 0.9rem; border: 0.18rem solid var(--ink); background: var(--bg, linear-gradient(#fff, #d8e8ff)); font-size: 1.45rem; box-shadow: inset 0 0.2rem 0 rgba(255,255,255,0.6), inset 0 -0.25rem 0 rgba(0,0,0,0.12), 0 0.18rem 0 var(--ink); }
 .ib .lb { position: absolute; left: 50%; bottom: -0.15rem; transform: translateX(-50%); font-size: 0.75rem; font-weight: 700; white-space: nowrap; }
 .ib:hover { transform: translateY(-2px) scale(1.08); }
 .ib:active { transform: translateY(1px) scale(0.92); }
@@ -174,7 +174,7 @@ button:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
 @keyframes toastIn { 0% { opacity: 0; transform: translateY(0.6rem) scale(0.85); } 10% { opacity: 1; transform: none; } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-0.6rem); } }
 #tips { position: absolute; left: 50%; bottom: 5.4rem; transform: translateX(-50%); display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; font-size: 0.95rem; font-weight: 600; transition: opacity 0.8s ease; pointer-events: none; }
 #tips kbd { display: inline-block; padding: 0.05rem 0.4rem; margin-right: 0.3rem; border: 2px solid #fff; border-radius: 0.35rem; background: rgba(18,32,74,0.55); font-family: var(--font); font-size: 0.85rem; }
-#promptBtn { position: absolute; transform: translate(-50%, -110%); display: flex; align-items: center; gap: 0.45rem; padding: 0.3rem 0.7rem 0.3rem 0.35rem; background: rgba(18, 32, 74, 0.82); border: 2px solid rgba(255, 255, 255, 0.9); border-radius: 0.8rem; font-size: 1rem; font-weight: 700; white-space: nowrap; }
+#promptBtn { position: absolute; left: 0; top: 0; transform: translate(-50%, -110%); will-change: transform; display: flex; align-items: center; gap: 0.45rem; padding: 0.3rem 0.7rem 0.3rem 0.35rem; background: rgba(18, 32, 74, 0.82); border: 2px solid rgba(255, 255, 255, 0.9); border-radius: 0.8rem; font-size: 1rem; font-weight: 700; white-space: nowrap; }
 #promptBtn kbd { display: inline-grid; place-items: center; width: 1.6rem; height: 1.6rem; border-radius: 0.4rem; background: #fff; color: var(--ink); font-family: var(--font); font-weight: 700; }
 
 /* Touch controls */

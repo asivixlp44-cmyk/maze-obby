@@ -865,7 +865,7 @@ function updateCamera(dt) {
 const LOBBY_AMB = { color: 0xffffff, dir: 0.5 };
 
 // Proximity prompts
-let activePrompt = null;
+let activePrompt = null, promptX = -1, promptY = -1;
 const projV = new V3();
 function updatePrompt() {
     let best = null, bd = Infinity;
@@ -878,8 +878,8 @@ function updatePrompt() {
     projV.copy(best.pos).setY(best.pos.y + 2).project(camera);
     if (projV.z > 1) { promptEl.hidden = true; return; }
     promptEl.hidden = false;
-    promptEl.style.left = ((projV.x + 1) / 2 * innerWidth) + 'px';
-    promptEl.style.top = ((1 - projV.y) / 2 * innerHeight) + 'px';
+    const px = Math.round((projV.x + 1) / 2 * innerWidth), py = Math.round((1 - projV.y) / 2 * innerHeight);
+    if (px !== promptX || py !== promptY) { promptX = px; promptY = py; promptEl.style.transform = `translate(${px}px, ${py}px) translate(-50%, -110%)`; }
     const txt = best.label();
     if (promptTxtEl.textContent !== txt) promptTxtEl.textContent = txt;
 }
@@ -936,7 +936,7 @@ function land(g, hard) {
     if (hard) ring(P.pos, 0xffffff, 4, 0.35);
     P.squashV -= hard ? 8 : 4;
 }
-let wallWarnT = -9;
+let wallWarnT = -9, lastToolKey = '';
 
 function update(dt) {
     clockT += dt;
@@ -1105,10 +1105,14 @@ function update(dt) {
     }
     const fastNow = Math.hypot(P.hv.x + P.kv.x, P.hv.z + P.kv.z);
     setSpeedLines(!reduceMotion && fastNow > 25 && P.moving ? Math.min(0.7, (fastNow - 25) * 0.05 + 0.25) : 0, dt);
-    $('#crosshair').hidden = !(id === 'rayGun' && !isTouch && !anyPopup());
-    $('#useBtn').hidden = !(isTouch && (id === 'rayGun' || id === 'sword'));
-    $('#useBtn').textContent = id === 'sword' ? '🗡️' : '🔫';
-    $('#downBtn').hidden = !(isTouch && id === 'carpet');
+    const toolKey = id + '|' + anyPopup();
+    if (toolKey !== lastToolKey) {
+        lastToolKey = toolKey;
+        $('#crosshair').hidden = !(id === 'rayGun' && !isTouch && !anyPopup());
+        $('#useBtn').hidden = !(isTouch && (id === 'rayGun' || id === 'sword'));
+        $('#useBtn').textContent = id === 'sword' ? '🗡️' : '🔫';
+        $('#downBtn').hidden = !(isTouch && id === 'carpet');
+    }
 
     sendMove(false);
     updatePrompt();
@@ -1132,9 +1136,9 @@ const fpsWatch = { t: 0, low: 0 };
 function watchFps(fps) {
     if (!running || document.hidden || !autoQualityAllowed()) return;
     fpsWatch.t += 0.5;
-    if (fpsWatch.t < 4) return;
+    if (fpsWatch.t < 2) return;
     fpsWatch.low = fps < 40 ? fpsWatch.low + 0.5 : 0;
-    if (fpsWatch.low < 3) return;
+    if (fpsWatch.low < 2.5) return;
     fpsWatch.low = 0;
     const next = { high: 'medium', medium: 'low' }[getQuality()];
     if (!next) return;
@@ -1336,6 +1340,7 @@ async function boot() {
         if (net.room && id.loggedIn && id.token && !net.bloxity) net.send('auth', { token: id.token });
         if (net.room) { setupLocalAvatar(); syncMyAvatar(); }
     });
+    addEventListener('pagehide', () => { try { if (net.room) net.room.leave(true); } catch (e) { /* closing anyway */ } });
     $('#playBtn').addEventListener('click', play);
     $('#reconnectBtn').addEventListener('click', () => location.reload());
     unlockAudioOnGesture();

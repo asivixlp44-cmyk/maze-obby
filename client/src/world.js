@@ -49,19 +49,30 @@ export function cullZones(stage, high) {
     const reach = high ? 2 : 1;
     for (const [z, g] of zoneGroups) {
         if (z === -2) continue;
-        if (z === -1) { g.visible = stage <= (high ? 1 : 0); continue; }
-        g.visible = stage < 0 ? z < reach : Math.abs(z - stage) <= reach;
+        if (z === -1) g.visible = stage <= (high ? 1 : 0);
+        else g.visible = stage < 0 ? z < reach : Math.abs(z - stage) <= reach;
+        // a hidden zone isn't walked by the renderer's per-frame matrix update either
+        g.matrixWorldAutoUpdate = g.visible;
     }
 }
 // Most of the world never moves: after building, its matrices are computed once and frozen, so the
 // renderer doesn't recompute thousands of them every frame. Things that do move are marked anim().
 const anim = (o) => { o.userData.anim = true; return o; };
 function freezeStatic() {
+    const near = new Map(propLabels.map((l) => [l.sp, l.r2]));
+    const wp = new V3();
     for (const g of zoneGroups.values()) {
         g.updateMatrixWorld(true);
-        g.traverse((o) => { if (!o.userData.anim) o.matrixAutoUpdate = false; });
+        g.traverse((o) => {
+            if (!o.userData.anim) o.matrixAutoUpdate = false;
+            // every sign and glow in the world: hidden when you're far away (unreadable there
+            // anyway, and each one is a draw call), signs over props also when you're right next to them
+            if (o.isSprite && !o.userData.keepFar) { o.getWorldPosition(wp); spriteLOD.push({ sp: o, x: wp.x, z: wp.z, near2: near.get(o) || 0, far2: FAR_SIGNS * FAR_SIGNS }); }
+        });
     }
 }
+const FAR_SIGNS = 85;
+const spriteLOD = [];
 // Signs over props hide while you stand right next to them, so they never cover your own name
 const propLabels = [];
 function propLabel(sp, x, z, r) { propLabels.push({ sp, x, z, r2: r * r }); return sp; }
@@ -899,7 +910,7 @@ export function updateWorld(dt, t, stage, me) {
     for (const bm of beamMats) bm.uniforms.uTime.value = t;
     const pulse = 0.75 + 0.5 * (0.5 + 0.5 * Math.sin(t * 7));
     for (const k of killMats) k.m.color.copy(k.base).multiplyScalar(pulse);
-    if (me) for (const l of propLabels) l.sp.visible = (l.x - me.x) ** 2 + (l.z - me.z) ** 2 > l.r2;
+    if (me) for (const l of spriteLOD) { const d2 = (l.x - me.x) ** 2 + (l.z - me.z) ** 2; l.sp.visible = d2 > l.near2 && d2 < l.far2; }
     // the water in the first maze ripples along
     if (waterT) waterT.offset.set((t * 0.02) % 1, (t * 0.035) % 1);
     updateDecor(dt, t);
